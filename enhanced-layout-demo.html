@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Enhanced Resizable Layout Demo</title>
+	<style>
+		:root {
+			--primary-color: #007bff;
+			--secondary-color: #6c757d;
+			--border-color: #dee2e6;
+			--gutter-color: #ddd;
+			--gutter-hover-color: #007bff;
+			--panel-bg: #f8f9fa;
+			--toolbar-bg: #f1f3f5;
+			--toolbar-height: 60px;
+		}
+
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		html,
+		body {
+			height: 100%;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+		}
+
+		.toolbar {
+			height: var(--toolbar-height);
+			padding: 10px;
+			background: var(--toolbar-bg);
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+			align-items: center;
+			border-bottom: 1px solid var(--border-color);
+			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+			z-index: 10;
+			position: relative;
+		}
+
+		.toolbar-section {
+			display: flex;
+			gap: 8px;
+			align-items: center;
+		}
+
+		.toolbar-section:not(:last-child) {
+			margin-right: 16px;
+			padding-right: 16px;
+			border-right: 1px solid var(--border-color);
+		}
+
+		.toolbar button {
+			padding: 6px 12px;
+			border: 1px solid var(--border-color);
+			background-color: white;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 14px;
+			transition: all 0.2s ease;
+		}
+
+		.toolbar button:hover {
+			background-color: #f0f0f0;
+			border-color: #ccc;
+		}
+
+		.toolbar button.active {
+			background-color: var(--primary-color);
+			color: white;
+			border: 1px solid #0056b3;
+		}
+
+		.toolbar .control-btn {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 32px;
+			height: 32px;
+			padding: 0;
+		}
+
+		.separator {
+			width: 1px;
+			height: 24px;
+			background-color: var(--border-color);
+			margin: 0 8px;
+		}
+
+		.layout-dropdown {
+			position: relative;
+			display: inline-block;
+		}
+
+		.dropdown-content {
+			display: none;
+			position: absolute;
+			top: 100%;
+			left: 0;
+			background-color: white;
+			min-width: 160px;
+			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+			z-index: 100;
+			border-radius: 4px;
+			overflow: hidden;
+		}
+
+		.dropdown-content.show {
+			display: block;
+		}
+
+		.dropdown-item {
+			padding: 10px 15px;
+			cursor: pointer;
+			white-space: nowrap;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.dropdown-item:hover {
+			background-color: #f5f5f5;
+		}
+
+		.dropdown-item.active {
+			background-color: rgba(0, 123, 255, 0.1);
+			color: var(--primary-color);
+		}
+
+		.layout-icon {
+			display: inline-block;
+			width: 18px;
+			height: 18px;
+			background-color: #ddd;
+			position: relative;
+		}
+
+		#layout {
+			height: calc(100vh - var(--toolbar-height));
+			width: 100%;
+			position: relative;
+			overflow: hidden;
+		}
+
+		.split {
+			overflow: auto;
+			background: var(--panel-bg);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 16px;
+			border: 1px solid var(--border-color);
+			position: relative;
+			transition: background-color 0.2s;
+			color: #333;
+		}
+
+		.split:hover {
+			background-color: #f0f0f0;
+		}
+
+		.split-content {
+			width: 100%;
+			height: 100%;
+			padding: 15px;
+			overflow: auto;
+		}
+
+		.panel-header {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 30px;
+			background-color: rgba(240, 240, 240, 0.8);
+			display: flex;
+			align-items: center;
+			padding: 0 10px;
+			font-size: 14px;
+			font-weight: 500;
+			border-bottom: 1px solid var(--border-color);
+			opacity: 0.7;
+			transition: opacity 0.2s;
+		}
+
+		.split:hover .panel-header {
+			opacity: 1;
+		}
+
+		.panel-actions {
+			margin-left: auto;
+			display: flex;
+			gap: 5px;
+		}
+
+		.panel-action {
+			cursor: pointer;
+			width: 20px;
+			height: 20px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 3px;
+		}
+
+		.panel-action:hover {
+			background-color: rgba(0, 0, 0, 0.1);
+		}
+
+		.v-container,
+		.h-container {
+			height: 100%;
+			width: 100%;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.h-row {
+			display: flex;
+			flex-direction: row;
+			height: 100%;
+		}
+
+		.gutter {
+			background-color: var(--gutter-color);
+			background-clip: padding-box;
+			transition: background-color 0.2s;
+		}
+
+		.gutter:hover {
+			background-color: var(--gutter-hover-color);
+		}
+
+		.gutter.gutter-horizontal {
+			cursor: col-resize;
+			width: 6px;
+			position: relative;
+		}
+
+		.gutter.gutter-vertical {
+			cursor: row-resize;
+			height: 6px;
+			position: relative;
+		}
+
+		.corner-container {
+			position: absolute;
+			z-index: 10;
+		}
+
+		.corner {
+			position: absolute;
+			width: 12px;
+			height: 12px;
+			background: var(--gutter-hover-color);
+			border-radius: 50%;
+			cursor: nwse-resize;
+			z-index: 20;
+			opacity: 0;
+			transition: opacity 0.2s;
+		}
+
+		.gutter:hover .corner {
+			opacity: 1;
+		}
+
+		.layout-title {
+			font-weight: 600;
+			margin-right: 10px;
+		}
+
+		.locked-overlay {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-color: rgba(0, 0, 0, 0.03);
+			z-index: 5;
+			display: none;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.locked-message {
+			background-color: rgba(255, 255, 255, 0.8);
+			padding: 10px 20px;
+			border-radius: 20px;
+			font-size: 14px;
+			font-weight: 500;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		}
+
+		.layout-locked .locked-overlay {
+			display: flex;
+		}
+
+		.toast {
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			background-color: rgba(0, 0, 0, 0.8);
+			color: white;
+			padding: 10px 15px;
+			border-radius: 4px;
+			font-size: 14px;
+			z-index: 1000;
+			opacity: 0;
+			transition: opacity 0.3s;
+			pointer-events: none;
+		}
+
+		.toast.show {
+			opacity: 1;
+		}
+
+		/* Tooltip */
+		.tooltip {
+			position: relative;
+		}
+
+		.tooltip:hover::after {
+			content: attr(data-tooltip);
+			position: absolute;
+			bottom: 100%;
+			left: 50%;
+			transform: translateX(-50%);
+			background-color: rgba(0, 0, 0, 0.8);
+			color: white;
+			padding: 5px 10px;
+			border-radius: 4px;
+			font-size: 12px;
+			white-space: nowrap;
+			z-index: 100;
+		}
+
+		/* Responsive adjustments */
+		@media (max-width: 768px) {
+			.toolbar {
+				height: auto;
+				flex-wrap: wrap;
+			}
+
+			.toolbar-section {
+				margin-bottom: 6px;
+			}
+
+			#layout {
+				height: calc(100vh - var(--toolbar-height) - 10px);
+			}
+		}
+
+		/* Add loading indicator */
+		.loading {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-color: rgba(255, 255, 255, 0.8);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			z-index: 1000;
+		}
+
+		.spinner {
+			width: 40px;
+			height: 40px;
+			border: 4px solid rgba(0, 0, 0, 0.1);
+			border-radius: 50%;
+			border-top-color: var(--primary-color);
+			animation: spin 1s ease-in-out infinite;
+		}
+
+		@keyframes spin {
+			to {
+				transform: rotate(360deg);
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div class="toolbar">
+		<div class="toolbar-section">
+			<span class="layout-title">版面配置</span>
+			<div class="layout-dropdown">
+				<button id="layoutDropdownBtn">選擇配置 ▾</button>
+				<div class="dropdown-content" id="layoutDropdown">
+					<div class="dropdown-item" data-type="1">
+						<span class="layout-icon" style="width: 18px; height: 18px;"></span>
+						1. 全螢幕
+					</div>
+					<div class="dropdown-item" data-type="2">
+						<span class="layout-icon" style="width: 18px; height: 18px; display: flex;">
+							<span style="width: 50%; height: 100%; background-color: #aaa;"></span>
+							<span style="width: 50%; height: 100%; background-color: #ddd;"></span>
+						</span>
+						2. 左右分割
+					</div>
+					<div class="dropdown-item" data-type="3">
+						<span class="layout-icon"
+							style="width: 18px; height: 18px; display: flex; flex-direction: column;">
+							<span style="height: 50%; display: flex;">
+								<span style="width: 50%; height: 100%; background-color: #aaa;"></span>
+								<span style="width: 50%; height: 100%; background-color: #bbb;"></span>
+							</span>
+							<span style="height: 50%; background-color: #ddd;"></span>
+						</span>
+						3. 上2下1
+					</div>
+					<div class="dropdown-item" data-type="4">
+						<span class="layout-icon"
+							style="width: 18px; height: 18px; display: flex; flex-direction: column;">
+							<span style="height: 50%; background-color: #aaa;"></span>
+							<span style="height: 50%; display: flex;">
+								<span style="width: 50%; height: 100%; background-color: #bbb;"></span>
+								<span style="width: 50%; height: 100%; background-color: #ddd;"></span>
+							</span>
+						</span>
+						4. 上1下2
+					</div>
+					<div class="dropdown-item" data-type="5">
+						<span class="layout-icon" style="width: 18px; height: 18px; display: flex;">
+							<span style="width: 50%; background-color: #aaa;"></span>
+							<span style="width: 50%; display: flex; flex-direction: column;">
+								<span style="height: 50%; background-color: #bbb;"></span>
+								<span style="height: 50%; background-color: #ddd;"></span>
+							</span>
+						</span>
+						5. 左1右2
+					</div>
+					<div class="dropdown-item" data-type="6">
+						<span class="layout-icon" style="width: 18px; height: 18px; display: flex;">
+							<span style="width: 50%; display: flex; flex-direction: column;">
+								<span style="height: 50%; background-color: #aaa;"></span>
+								<span style="height: 50%; background-color: #bbb;"></span>
+							</span>
+							<span style="width: 50%; background-color: #ddd;"></span>
+						</span>
+						6. 左2右1
+					</div>
+					<div class="dropdown-item" data-type="7">
+						<span class="layout-icon"
+							style="width: 18px; height: 18px; display: flex; flex-direction: column;">
+							<span style="height: 50%; display: flex;">
+								<span style="width: 50%; height: 100%; background-color: #aaa;"></span>
+								<span style="width: 50%; height: 100%; background-color: #bbb;"></span>
+							</span>
+							<span style="height: 50%; display: flex;">
+								<span style="width: 50%; height: 100%; background-color: #ccc;"></span>
+								<span style="width: 50%; height: 100%; background-color: #ddd;"></span>
+							</span>
+						</span>
+						7. 四宮格
+					</div>
+					<div class="dropdown-item" data-type="8">
+						<span class="layout-icon"
+							style="width: 18px; height: 18px; display: flex; flex-direction: column;">
+							<span style="height: 50%; display: flex;">
+								<span style="width: 33.3%; height: 100%; background-color: #aaa;"></span>
+								<span style="width: 33.3%; height: 100%; background-color: #bbb;"></span>
+								<span style="width: 33.3%; height: 100%; background-color: #ccc;"></span>
+							</span>
+							<span style="height: 50%; display: flex;">
+								<span style="width: 33.3%; height: 100%; background-color: #ddd;"></span>
+								<span style="width: 33.3%; height: 100%; background-color: #eee;"></span>
+								<span style="width: 33.3%; height: 100%; background-color: #f5f5f5;"></span>
+							</span>
+						</span>
+						8. 六格(2x3)
+					</div>
+					<div class="dropdown-item" data-type="9">
+						<span class="layout-icon"
+							style="width: 18px; height: 18px; display: flex; flex-direction: column;">
+							<span style="height: 33.3%; display: flex;">
+								<span style="width: 33.3%; height: 100%; background-color: #aaa;"></span>
+								<span style="width: 33.3%; height: 100%; background-color: #bbb;"></span>
+								<span style="width: 33.3%; height: 100%; background-color: #ccc;"></span>
+							</span>
+							<span style="height: 33.3%; display: flex;">
+								<span style="width: 33.3%; height: 100%; background-color: #ddd;"></span>
+								<span style="width: 33.3%; height: 100%; background-color: #eee;"></span>
+								<span style="width: 33.3%; height: 100%; background-color: #f5f5f5;"></span>
+							</span>
+							<span style="height: 33.3%; display: flex;">
+								<span style="width: 33.3%; height: 100%; background-color: #f9f9f9;"></span>
+								<span style="width: 33.3%; height: 100%; background-color: #fdfdfd;"></span>
+								<span style="width: 33.3%; height: 100%; background-color: #fff;"></span>
+							</span>
+						</span>
+						9. 九宮格
+					</div>
+					<div class="dropdown-item" data-type="10">
+						<span class="layout-icon"
+							style="width: 18px; height: 18px; display: flex; flex-direction: column;">
+							<span style="height: 70%; background-color: #aaa;"></span>
+							<span style="height: 30%; display: flex;">
+								<span style="width: 33.3%; height: 100%; background-color: #bbb;"></span>
+								<span style="width: 33.3%; height: 100%; background-color: #ccc;"></span>
+								<span style="width: 33.3%; height: 100%; background-color: #ddd;"></span>
+							</span>
+						</span>
+						10. 主內容3縮略圖
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="toolbar-section">
+			<button id="lockBtn" class="tooltip" data-tooltip="鎖定版面不允許調整大小">
+				<span id="lockText">鎖定版面</span>
+			</button>
+		</div>
+	</div>
+
+	<div id="layout"></div>
+	<div class="locked-overlay">
+		<div class="locked-message">版面已鎖定，點擊「鎖定版面」按鈕來解鎖</div>
+	</div>
+	<div class="toast" id="toastMessage"></div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.5/split.min.js"></script>
+	<script>
+		// 全局配置與狀態管理
+		const config = {
+			isLocked: false,
+			currentLayoutType: 1,
+			panels: {},
+			splits: {},
+			// 儲存所有配置的預設尺寸
+			defaultSizes: {
+				1: [100],
+				2: [50, 50],
+				3: [[50, 50], [50, 50]],  // [[上排水平分割], [垂直分割]]
+				4: [[50, 50], [50, 50]],
+				5: [[50, 50], [50, 50]],
+				6: [[50, 50], [50, 50]],
+				7: [[50, 50], [50, 50], [50, 50]],
+				8: [[33.33, 33.33, 33.33], [33.33, 33.33, 33.33], [50, 50]],
+				9: [[33.33, 33.33, 33.33], [33.33, 33.33, 33.33], [33.33, 33.33, 33.33]],
+				10: [[33.33, 33.33, 33.33], [70, 30]]
+			},
+			// 保存當前的尺寸
+			currentSizes: {},
+			panelContents: {}
+		};
+
+		document.addEventListener('DOMContentLoaded', () => {
+			initializeApp();
+		});
+
+		function initializeApp() {
+			setupEventListeners();
+			setupDropdown();
+			setLayout(1); // 預設為全螢幕配置
+			setActive(document.querySelector('.dropdown-item[data-type="1"]'));
+			showToast('歡迎使用增強版面配置工具！');
+		}
+
+		function setupEventListeners() {
+			// 版面鎖定按鈕
+			document.getElementById('lockBtn').addEventListener('click', toggleLayoutLock);
+
+			// 全局的滑鼠事件監聽
+			document.addEventListener('mousedown', handleGlobalMouseDown);
+			document.addEventListener('mousemove', handleGlobalMouseMove);
+			document.addEventListener('mouseup', handleGlobalMouseUp);
+
+			// 視窗大小改變時重新計算版面
+			window.addEventListener('resize', handleWindowResize);
+		}
+
+		// 下拉選單設置
+		function setupDropdown() {
+			const dropdownBtn = document.getElementById('layoutDropdownBtn');
+			const dropdown = document.getElementById('layoutDropdown');
+
+			dropdownBtn.addEventListener('click', () => {
+				dropdown.classList.toggle('show');
+			});
+
+			// 點擊其他地方關閉下拉選單
+			window.onclick = function (event) {
+				if (!event.target.matches('#layoutDropdownBtn')) {
+					if (dropdown.classList.contains('show')) {
+						dropdown.classList.remove('show');
+					}
+				}
+			};
+
+			// 設置下拉選單的選項點擊事件
+			document.querySelectorAll('.dropdown-item').forEach(item => {
+				item.addEventListener('click', () => {
+					const type = parseInt(item.dataset.type);
+					setLayout(type);
+					setActive(item);
+					dropdown.classList.remove('show');
+				});
+			});
+		}
+
+		// 設置當前選中的版面按鈕
+		function setActive(element) {
+			document.querySelectorAll('.dropdown-item').forEach(btn => {
+				btn.classList.remove('active');
+			});
+			element.classList.add('active');
+			config.currentLayoutType = parseInt(element.dataset.type);
+
+			// 更新按鈕文字
+			document.getElementById('layoutDropdownBtn').textContent = element.textContent.trim();
+		}
+
+		// 切換版面鎖定狀態
+		function toggleLayoutLock() {
+			config.isLocked = !config.isLocked;
+			document.getElementById('lockText').textContent = config.isLocked ? '解鎖版面' : '鎖定版面';
+			document.body.classList.toggle('layout-locked', config.isLocked);
+
+			if (config.isLocked) {
+				showToast('版面已鎖定，無法調整大小');
+			} else {
+				showToast('版面已解鎖，可以調整大小');
+			}
+		}
+
+		// 顯示提示消息
+		function showToast(message, duration = 2000) {
+			const toast = document.getElementById('toastMessage');
+			toast.textContent = message;
+			toast.classList.add('show');
+
+			setTimeout(() => {
+				toast.classList.remove('show');
+			}, duration);
+		}
+
+		// 清空版面
+		function clearLayout() {
+			document.getElementById("layout").innerHTML = "";
+			config.splits = {};
+			config.panels = {};
+		}
+
+		// 創建面板
+		function createPanel(id) {
+			const div = document.createElement("div");
+			div.className = "split";
+			div.id = `panel-${id}`;
+
+			// 創建面板標題和內容區域
+			const header = document.createElement("div");
+			header.className = "panel-header";
+			header.textContent = `Panel ${id}`;
+
+			// 面板操作按鈕
+			const actions = document.createElement("div");
+			actions.className = "panel-actions";
+
+			header.appendChild(actions);
+
+			// 內容區域
+			const content = document.createElement("div");
+			content.className = "split-content";
+
+			// 如果有已保存的內容，則恢復
+			if (config.panelContents[id]) {
+				content.innerHTML = config.panelContents[id];
+			} else {
+				// 示範內容
+				const demoContent = `
+            <h3>Panel ${id}</h3>
+          `;
+				content.innerHTML = demoContent;
+				config.panelContents[id] = demoContent;
+			}
+
+			div.appendChild(header);
+			div.appendChild(content);
+
+			return div;
+		}
+
+		// Split.js 的共用選項
+		function sharedSplitOptions(direction, count = 2) {
+			const defaultSizes = new Array(count).fill(100 / count);
+
+			return {
+				direction,
+				sizes: defaultSizes,
+				minSize: 50,
+				gutterSize: 6,
+				gutterAlign: 'center',
+				snapOffset: 5,
+				dragInterval: 1,
+				cursor: direction === 'horizontal' ? 'col-resize' : 'row-resize',
+				gutter: (index, direction) => {
+					const gutter = document.createElement('div');
+					gutter.className = `gutter gutter-${direction}`;
+
+					// 添加角落拖曳點
+					if (!config.isLocked) {
+						const corner = document.createElement('div');
+						corner.className = 'corner';
+						corner.setAttribute('data-index', index);
+						corner.setAttribute('data-direction', direction);
+						gutter.appendChild(corner);
+					}
+
+					return gutter;
+				},
+				elementStyle: (dimension, size, gutterSize) => {
+					return {
+						'flex-basis': `calc(${size}% - ${gutterSize}px)`,
+						'transition': 'flex-basis 0.1s ease'
+					};
+				},
+				gutterStyle: (dimension, gutterSize) => {
+					return {
+						'flex-basis': `${gutterSize}px`
+					};
+				},
+				onDragStart: () => {
+					if (config.isLocked) {
+						return false; // 如果布局被鎖定，則不允許拖曳
+					}
+					document.body.classList.add('dragging');
+				},
+				onDragEnd: () => {
+					document.body.classList.remove('dragging');
+					// 保存當前的尺寸設置
+					saveSplitSizes();
+				}
+			};
+		}
+
+		// 保存所有的分割尺寸
+		function saveSplitSizes() {
+			const layoutType = config.currentLayoutType;
+			config.currentSizes[layoutType] = {};
+
+			// 遍歷所有的分割實例並保存尺寸
+			Object.keys(config.splits).forEach(key => {
+				const split = config.splits[key];
+				if (split && split.getSizes) {
+					config.currentSizes[layoutType][key] = split.getSizes();
+				}
+			});
+		}
+
+		// 全局拖曳角落相關變數
+		let isDraggingCorner = false;
+		let dragTarget = null;
+		let initialX, initialY;
+		let targetHSplit, targetVSplit;
+		let hSizes = [], vSizes = [];
+
+		// 處理全局滑鼠按下事件
+		function handleGlobalMouseDown(e) {
+			// 檢查是否點擊了角落拖曳點
+			if (e.target.classList.contains('corner') && !config.isLocked) {
+				isDraggingCorner = true;
+				dragTarget = e.target;
+				initialX = e.clientX;
+				initialY = e.clientY;
+				document.body.style.cursor = 'nwse-resize';
+
+				// 找到相關的水平和垂直分割
+				const gutterParent = dragTarget.closest('.gutter');
+				const direction = gutterParent.classList.contains('gutter-horizontal') ? 'horizontal' : 'vertical';
+
+				// 尋找最近的水平和垂直分割實例
+				if (direction === 'horizontal') {
+					targetHSplit = findSplitInstance(gutterParent);
+					targetVSplit = findClosestVSplit(gutterParent);
+				} else {
+					targetVSplit = findSplitInstance(gutterParent);
+					targetHSplit = findClosestHSplit(gutterParent);
+				}
+
+				// 保存當前的尺寸
+				if (targetHSplit) hSizes = targetHSplit.getSizes();
+				if (targetVSplit) vSizes = targetVSplit.getSizes();
+
+				e.preventDefault();
+			}
+		}
+
+		// 根據DOM元素找到對應的Split實例
+		function findSplitInstance(element) {
+			const parent = element.parentElement;
+			return parent.__splitInstance || null;
+		}
+
+		// 找到最近的水平分割
+		function findClosestHSplit(element) {
+			let current = element;
+			while (current) {
+				if (current.classList && current.classList.contains('h-row') && current.__splitInstance) {
+					return current.__splitInstance;
+				}
+				current = current.parentElement;
+			}
+			return null;
+		}
+
+		// 找到最近的垂直分割
+		function findClosestVSplit(element) {
+			let current = element;
+			while (current) {
+				if (current.classList && current.classList.contains('v-container') && current.__splitInstance) {
+					return current.__splitInstance;
+				}
+				current = current.parentElement;
+			}
+			return null;
+		}
+
+		// 處理全局滑鼠移動事件
+		function handleGlobalMouseMove(e) {
+			if (isDraggingCorner && !config.isLocked) {
+				const dx = e.clientX - initialX;
+				const dy = e.clientY - initialY;
+
+				// 根據布局的實際尺寸計算百分比變化
+				const layoutWidth = document.getElementById('layout').offsetWidth;
+				const layoutHeight = document.getElementById('layout').offsetHeight;
+
+				const deltaX = dx / layoutWidth * 100;
+				const deltaY = dy / layoutHeight * 100;
+
+				// 更新分割尺寸
+				if (targetHSplit && hSizes.length > 1) {
+					const hIndex = Array.from(document.querySelectorAll('.gutter.gutter-horizontal')).findIndex(
+						g => g.contains(dragTarget)
+					);
+
+					if (hIndex >= 0) {
+						const newHSizes = [...hSizes];
+						// 只調整相關的兩個面板
+						newHSizes[hIndex] += deltaX;
+						newHSizes[hIndex + 1] -= deltaX;
+
+						// 確保尺寸在合理範圍內
+						if (newHSizes[hIndex] > 10 && newHSizes[hIndex + 1] > 10) {
+							targetHSplit.setSizes(newHSizes);
+						}
+					}
+				}
+
+				if (targetVSplit && vSizes.length > 1) {
+					const vIndex = Array.from(document.querySelectorAll('.gutter.gutter-vertical')).findIndex(
+						g => g.contains(dragTarget)
+					);
+
+					if (vIndex >= 0) {
+						const newVSizes = [...vSizes];
+						// 只調整相關的兩個面板
+						newVSizes[vIndex] += deltaY;
+						newVSizes[vIndex + 1] -= deltaY;
+
+						// 確保尺寸在合理範圍內
+						if (newVSizes[vIndex] > 10 && newVSizes[vIndex + 1] > 10) {
+							targetVSplit.setSizes(newVSizes);
+						}
+					}
+				}
+
+				initialX = e.clientX;
+				initialY = e.clientY;
+
+				if (targetHSplit) hSizes = targetHSplit.getSizes();
+				if (targetVSplit) vSizes = targetVSplit.getSizes();
+			}
+		}
+
+		// 處理全局滑鼠釋放事件
+		function handleGlobalMouseUp() {
+			if (isDraggingCorner) {
+				isDraggingCorner = false;
+				dragTarget = null;
+				document.body.style.cursor = '';
+
+				// 保存當前尺寸
+				saveSplitSizes();
+			}
+		}
+
+		// 視窗大小改變時的處理
+		let resizeTimeout;
+		function handleWindowResize() {
+			clearTimeout(resizeTimeout);
+			resizeTimeout = setTimeout(() => {
+				// 在視窗大小改變後，可能需要重新設置分割區域的大小
+				Object.values(config.splits).forEach(split => {
+					if (split && split.destroy) {
+						split.destroy();
+					}
+				});
+				setLayout(config.currentLayoutType);
+			}, 300);
+		}
+		function setLayout(type) {
+			showLoading();
+			setTimeout(() => {
+				clearLayout();
+				config.currentLayoutType = type;
+				const layout = document.getElementById("layout");
+
+				// 使用保存的尺寸或預設尺寸
+				const savedSizes = config.currentSizes[type] || {};
+
+				// 根據不同類型生成不同布局
+				switch (type) {
+					case 1: // 全螢幕
+						createFullScreenLayout();
+						break;
+					case 2: // 左右分割
+						createHorizontalSplitLayout();
+						break;
+					case 3: // 上2下1
+						createTop2Bottom1Layout();
+						break;
+					case 4: // 上1下2
+						createTop1Bottom2Layout();
+						break;
+					case 5: // 左1右2
+						createLeft1Right2Layout();
+						break;
+					case 6: // 左2右1
+						createLeft2Right1Layout();
+						break;
+					case 7: // 四宮格
+						create2x2GridLayout();
+						break;
+					case 8: // 六格(2x3)
+						create2x3GridLayout();
+						break;
+					case 9: // 九宮格
+						create3x3GridLayout();
+						break;
+					case 10: // 主內容3縮略圖
+						createMainContent3ThumbnailsLayout();
+						break;
+					default:
+						createFullScreenLayout();
+				}
+
+				hideLoading();
+			}, 100);
+		}
+
+		// 顯示載入中指示器
+		function showLoading() {
+			const loadingDiv = document.createElement('div');
+			loadingDiv.className = 'loading';
+			loadingDiv.id = 'loadingIndicator';
+
+			const spinner = document.createElement('div');
+			spinner.className = 'spinner';
+			loadingDiv.appendChild(spinner);
+
+			document.body.appendChild(loadingDiv);
+		}
+
+		// 隱藏載入中指示器
+		function hideLoading() {
+			const loadingDiv = document.getElementById('loadingIndicator');
+			if (loadingDiv) {
+				loadingDiv.remove();
+			}
+		}
+
+		// 還原布局到預設尺寸
+		function resetLayout() {
+			const type = config.currentLayoutType;
+
+			// 刪除保存的尺寸，使用預設值
+			delete config.currentSizes[type];
+
+			// 重新應用同樣的布局類型
+			setLayout(type);
+			showToast('已還原預設尺寸');
+		}
+
+		// === 不同布局的創建函數 ===
+
+		// 布局1: 全螢幕
+		function createFullScreenLayout() {
+			const layout = document.getElementById("layout");
+			layout.appendChild(createPanel(1));
+		}
+
+		// 布局2: 左右分割
+		function createHorizontalSplitLayout() {
+			const layout = document.getElementById("layout");
+			const row = document.createElement("div");
+			row.className = "h-row";
+
+			const a = createPanel(1);
+			const b = createPanel(2);
+			row.append(a, b);
+			layout.appendChild(row);
+
+			// 獲取保存的尺寸或使用預設值
+			const sizes = config.currentSizes[2]?.['h-row'] || config.defaultSizes[2];
+
+			// 創建Split實例
+			const splitInstance = Split([a, b], {
+				...sharedSplitOptions("horizontal"),
+				sizes: sizes
+			});
+
+			// 保存分割實例以便後續操作
+			row.__splitInstance = splitInstance;
+			config.splits['h-row'] = splitInstance;
+		}
+
+		// 布局3: 上2下1
+		function createTop2Bottom1Layout() {
+			const layout = document.getElementById("layout");
+			const v = document.createElement("div");
+			v.className = "v-container";
+
+			const h = document.createElement("div");
+			h.className = "h-row";
+
+			const a = createPanel(1);
+			const b = createPanel(2);
+			const c = createPanel(3);
+
+			h.append(a, b);
+			v.append(h, c);
+			layout.appendChild(v);
+
+			// 獲取保存的尺寸或使用預設值
+			const hSizes = config.currentSizes[3]?.['h-row'] || config.defaultSizes[3][0];
+			const vSizes = config.currentSizes[3]?.['v-container'] || config.defaultSizes[3][1];
+
+			// 創建水平分割
+			const hSplit = Split([a, b], {
+				...sharedSplitOptions("horizontal"),
+				sizes: hSizes
+			});
+
+			// 創建垂直分割
+			const vSplit = Split([h, c], {
+				...sharedSplitOptions("vertical"),
+				sizes: vSizes
+			});
+
+			// 保存分割實例
+			h.__splitInstance = hSplit;
+			v.__splitInstance = vSplit;
+			config.splits['h-row'] = hSplit;
+			config.splits['v-container'] = vSplit;
+		}
+
+		// 布局4: 上1下2
+		function createTop1Bottom2Layout() {
+			const layout = document.getElementById("layout");
+			const v = document.createElement("div");
+			v.className = "v-container";
+
+			const h = document.createElement("div");
+			h.className = "h-row";
+
+			const a = createPanel(1);
+			const b = createPanel(2);
+			const c = createPanel(3);
+
+			h.append(b, c);
+			v.append(a, h);
+			layout.appendChild(v);
+
+			// 獲取保存的尺寸或使用預設值
+			const hSizes = config.currentSizes[4]?.['h-row'] || config.defaultSizes[4][0];
+			const vSizes = config.currentSizes[4]?.['v-container'] || config.defaultSizes[4][1];
+
+			// 創建分割
+			const hSplit = Split([b, c], {
+				...sharedSplitOptions("horizontal"),
+				sizes: hSizes
+			});
+
+			const vSplit = Split([a, h], {
+				...sharedSplitOptions("vertical"),
+				sizes: vSizes
+			});
+
+			// 保存分割實例
+			h.__splitInstance = hSplit;
+			v.__splitInstance = vSplit;
+			config.splits['h-row'] = hSplit;
+			config.splits['v-container'] = vSplit;
+		}
+
+		// 布局5: 左1右2
+		function createLeft1Right2Layout() {
+			const layout = document.getElementById("layout");
+			const row = document.createElement("div");
+			row.className = "h-row";
+
+			const left = createPanel(1);
+			const col = document.createElement("div");
+			col.className = "v-container";
+
+			const b = createPanel(2);
+			const c = createPanel(3);
+
+			col.append(b, c);
+			row.append(left, col);
+			layout.appendChild(row);
+
+			// 獲取保存的尺寸或使用預設值
+			const hSizes = config.currentSizes[5]?.['h-row'] || config.defaultSizes[5][0];
+			const vSizes = config.currentSizes[5]?.['v-container'] || config.defaultSizes[5][1];
+
+			// 創建垂直分割
+			const vSplit = Split([b, c], {
+				...sharedSplitOptions("vertical"),
+				sizes: vSizes
+			});
+
+			// 創建水平分割
+			const hSplit = Split([left, col], {
+				...sharedSplitOptions("horizontal"),
+				sizes: hSizes
+			});
+
+			// 保存分割實例
+			col.__splitInstance = vSplit;
+			row.__splitInstance = hSplit;
+			config.splits['v-container'] = vSplit;
+			config.splits['h-row'] = hSplit;
+		}
+
+		// 布局6: 左2右1
+		function createLeft2Right1Layout() {
+			const layout = document.getElementById("layout");
+			const row = document.createElement("div");
+			row.className = "h-row";
+
+			const col = document.createElement("div");
+			col.className = "v-container";
+
+			const a = createPanel(1);
+			const b = createPanel(2);
+			const right = createPanel(3);
+
+			col.append(a, b);
+			row.append(col, right);
+			layout.appendChild(row);
+
+			// 獲取保存的尺寸或使用預設值
+			const hSizes = config.currentSizes[6]?.['h-row'] || config.defaultSizes[6][0];
+			const vSizes = config.currentSizes[6]?.['v-container'] || config.defaultSizes[6][1];
+
+			// 創建垂直分割
+			const vSplit = Split([a, b], {
+				...sharedSplitOptions("vertical"),
+				sizes: vSizes
+			});
+
+			// 創建水平分割
+			const hSplit = Split([col, right], {
+				...sharedSplitOptions("horizontal"),
+				sizes: hSizes
+			});
+
+			// 保存分割實例
+			col.__splitInstance = vSplit;
+			row.__splitInstance = hSplit;
+			config.splits['v-container'] = vSplit;
+			config.splits['h-row'] = hSplit;
+		}
+
+		// 布局7: 四宮格 (2x2)
+		function create2x2GridLayout() {
+			const layout = document.getElementById("layout");
+			const v = document.createElement("div");
+			v.className = "v-container";
+
+			const r1 = document.createElement("div");
+			r1.className = "h-row";
+			r1.id = "h-row-1";
+
+			const r2 = document.createElement("div");
+			r2.className = "h-row";
+			r2.id = "h-row-2";
+
+			const a = createPanel(1);
+			const b = createPanel(2);
+			const c = createPanel(3);
+			const d = createPanel(4);
+
+			r1.append(a, b);
+			r2.append(c, d);
+			v.append(r1, r2);
+			layout.appendChild(v);
+
+			// 獲取保存的尺寸或使用預設值
+			const r1Sizes = config.currentSizes[7]?.['h-row-1'] || config.defaultSizes[7][0];
+			const r2Sizes = config.currentSizes[7]?.['h-row-2'] || config.defaultSizes[7][1];
+			const vSizes = config.currentSizes[7]?.['v-container'] || config.defaultSizes[7][2];
+
+			// 創建分割
+			const r1Split = Split([a, b], {
+				...sharedSplitOptions("horizontal"),
+				sizes: r1Sizes
+			});
+
+			const r2Split = Split([c, d], {
+				...sharedSplitOptions("horizontal"),
+				sizes: r2Sizes
+			});
+
+			const vSplit = Split([r1, r2], {
+				...sharedSplitOptions("vertical"),
+				sizes: vSizes
+			});
+
+			// 保存分割實例
+			r1.__splitInstance = r1Split;
+			r2.__splitInstance = r2Split;
+			v.__splitInstance = vSplit;
+			config.splits['h-row-1'] = r1Split;
+			config.splits['h-row-2'] = r2Split;
+			config.splits['v-container'] = vSplit;
+		}
+
+		// 布局8: 六格 (2x3)
+		function create2x3GridLayout() {
+			const layout = document.getElementById("layout");
+			const v = document.createElement("div");
+			v.className = "v-container";
+
+			const r1 = document.createElement("div");
+			r1.className = "h-row";
+			r1.id = "h-row-1";
+
+			const r2 = document.createElement("div");
+			r2.className = "h-row";
+			r2.id = "h-row-2";
+
+			// 創建6個面板
+			const panels = Array.from({ length: 6 }, (_, i) => createPanel(i + 1));
+
+			r1.append(panels[0], panels[1], panels[2]);
+			r2.append(panels[3], panels[4], panels[5]);
+			v.append(r1, r2);
+			layout.appendChild(v);
+
+			// 獲取保存的尺寸或使用預設值
+			const r1Sizes = config.currentSizes[8]?.['h-row-1'] || config.defaultSizes[8][0];
+			const r2Sizes = config.currentSizes[8]?.['h-row-2'] || config.defaultSizes[8][1];
+			const vSizes = config.currentSizes[8]?.['v-container'] || config.defaultSizes[8][2];
+
+			// 創建分割
+			const r1Split = Split([panels[0], panels[1], panels[2]], {
+				...sharedSplitOptions("horizontal", 3),
+				sizes: r1Sizes
+			});
+
+			const r2Split = Split([panels[3], panels[4], panels[5]], {
+				...sharedSplitOptions("horizontal", 3),
+				sizes: r2Sizes
+			});
+
+			const vSplit = Split([r1, r2], {
+				...sharedSplitOptions("vertical"),
+				sizes: vSizes
+			});
+
+			// 保存分割實例
+			r1.__splitInstance = r1Split;
+			r2.__splitInstance = r2Split;
+			v.__splitInstance = vSplit;
+			config.splits['h-row-1'] = r1Split;
+			config.splits['h-row-2'] = r2Split;
+			config.splits['v-container'] = vSplit;
+		}
+
+		// 布局9: 九宮格 (3x3)
+		function create3x3GridLayout() {
+			const layout = document.getElementById("layout");
+			const v = document.createElement("div");
+			v.className = "v-container";
+
+			// 創建3行
+			const rows = Array.from({ length: 3 }, (_, i) => {
+				const row = document.createElement("div");
+				row.className = "h-row";
+				row.id = `h-row-${i + 1}`;
+				return row;
+			});
+
+			// 創建9個面板
+			const panels = Array.from({ length: 9 }, (_, i) => createPanel(i + 1));
+
+			// 將面板添加到行中
+			for (let i = 0; i < 3; i++) {
+				rows[i].append(panels[i * 3], panels[i * 3 + 1], panels[i * 3 + 2]);
+				v.appendChild(rows[i]);
+			}
+
+			layout.appendChild(v);
+
+			// 獲取保存的尺寸或使用預設值
+			const rowSizes = [];
+			for (let i = 0; i < 3; i++) {
+				rowSizes.push(config.currentSizes[9]?.[`h-row-${i + 1}`] || config.defaultSizes[9][i]);
+			}
+			const vSizes = config.currentSizes[9]?.['v-container'] || config.defaultSizes[9][2];
+
+			// 創建水平分割
+			const rowSplits = rows.map((row, i) => {
+				const start = i * 3;
+				const split = Split([panels[start], panels[start + 1], panels[start + 2]], {
+					...sharedSplitOptions("horizontal", 3),
+					sizes: rowSizes[i]
+				});
+				row.__splitInstance = split;
+				config.splits[`h-row-${i + 1}`] = split;
+				return split;
+			});
+
+			// 創建垂直分割
+			const vSplit = Split(rows, {
+				...sharedSplitOptions("vertical", 3),
+				sizes: vSizes
+			});
+
+			v.__splitInstance = vSplit;
+			config.splits['v-container'] = vSplit;
+		}
+
+		// 布局10: 主內容3縮略圖
+		function createMainContent3ThumbnailsLayout() {
+			const layout = document.getElementById("layout");
+			const v = document.createElement("div");
+			v.className = "v-container";
+
+			const mainContent = createPanel(1);
+			mainContent.classList.add('main-content');
+
+			const thumbnailRow = document.createElement("div");
+			thumbnailRow.className = "h-row";
+			thumbnailRow.id = "thumbnails-row";
+
+			const t1 = createPanel(2);
+			const t2 = createPanel(3);
+			const t3 = createPanel(4);
+
+			thumbnailRow.append(t1, t2, t3);
+			v.append(mainContent, thumbnailRow);
+			layout.appendChild(v);
+
+			// 獲取保存的尺寸或使用預設值
+			const thumbSizes = config.currentSizes[10]?.['thumbnails-row'] || config.defaultSizes[10][0];
+			const vSizes = config.currentSizes[10]?.['v-container'] || config.defaultSizes[10][1];
+
+			// 創建分割
+			const thumbSplit = Split([t1, t2, t3], {
+				...sharedSplitOptions("horizontal", 3),
+				sizes: thumbSizes
+			});
+
+			const vSplit = Split([mainContent, thumbnailRow], {
+				...sharedSplitOptions("vertical"),
+				sizes: vSizes
+			});
+
+			// 保存分割實例
+			thumbnailRow.__splitInstance = thumbSplit;
+			v.__splitInstance = vSplit;
+			config.splits['thumbnails-row'] = thumbSplit;
+			config.splits['v-container'] = vSplit;
+		}
+
+	</script>
+</body>

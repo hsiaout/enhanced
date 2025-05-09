@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>新竹市道路養護工程資訊管理系統</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap-grid.min.css"
+		integrity="sha512-i1b/nzkVo97VN5WbEtaPebBG8REvjWeqNclJ6AItj7msdVcaveKrlIIByDpvjk5nwHjXkIqGZscVxOrTb9tsMA=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<link rel="stylesheet" href="page.css">
+</head>
+
+<body>
+	<script>
+		// Add event listener for mobile menu toggle
+		document.addEventListener('DOMContentLoaded', function () {
+			const menuToggle = document.querySelector('.menu-toggle');
+			const sidebar = document.querySelector('.sidebar');
+
+			if (menuToggle && sidebar) {
+				menuToggle.addEventListener('click', function () {
+					sidebar.classList.toggle('active');
+				});
+			}
+
+			// Responsive handling - close sidebar when clicking outside on mobile
+			document.addEventListener('click', function (event) {
+				if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
+					if (!sidebar.contains(event.target) && event.target !== menuToggle) {
+						sidebar.classList.remove('active');
+					}
+				}
+			});
+
+			// Adjust layout on window resize
+			window.addEventListener('resize', function () {
+				if (window.innerWidth > 768) {
+					sidebar.classList.remove('active');
+				}
+			});
+		});
+	</script>
+	<!-- Header -->
+	<div class="header">
+		<div class="menu-toggle">☰</div>
+		<div class="logo">
+			<img src="logo.png" alt="Logo">
+			<div class="logo-text">新竹市道路養護工程資訊管理系統</div>
+		</div>
+		<div class="nav-tabs">
+			<div class="nav-tab active">數據儀表板</div>
+			<div class="nav-tab">GIS圖台</div>
+			<div class="nav-tab">道路業務</div>
+			<div class="nav-tab">路燈業務</div>
+			<div class="nav-tab">資訊整合查詢</div>
+		</div>
+		<div class="user-area">
+			<div class="user-icon">U</div>
+			<span class="login-text">使用者</span>
+			<a href="#" class="logout">登出</a>
+		</div>
+	</div>
+
+	<!-- Sidebar -->
+	<div class="sidebar">
+		<div class="menu-item active">
+			<i>📊</i>
+			<span>數據中心</span>
+		</div>
+		<div class="submenu-item active">道路數據</div>
+		<div class="submenu-item">路徑數據</div>
+
+		<div class="menu-item">
+			<i>📋</i>
+			<span>功能項目</span>
+		</div>
+
+		<div class="menu-item">
+			<i>📖</i>
+			<span>操作手冊</span>
+		</div>
+
+		<div class="menu-item">
+			<i>⚙️</i>
+			<span>設定</span>
+		</div>
+	</div>
+
+	<!-- Main Content -->
+	<div class="main-content">
+		<!-- Welcome Banner -->
+		<div class="welcome-banner">
+			<div class="banner-title">道路數據</div>
+			<div class="banner-desc">一站式管理平台，幫助您以視覺化方式</div>
+			<div class="banner-desc">有效率的管理道路</div>
+		</div>
+
+		<div class="stats-row">
+			<!-- Road Length Stats -->
+			<div class="stats-card">
+				<div class="stats-title">道路長度總覽</div>
+				<div class="stats-grid3">
+					<div class="stats-item">
+						<div class="stats-label">道路總長度 (m)</div>
+						<div class="stats-value">2,207,629.77</div>
+						<div class="stats-change">去年同比: 8.63% ▲</div>
+					</div>
+	
+					<div class="stats-item">
+						<div class="stats-label">8米以上道路長度 (m)</div>
+						<div class="stats-value">767,663.13</div>
+						<div class="stats-change">同比去年: 4.07% ▲</div>
+					</div>
+	
+					<div class="stats-item">
+						<div class="stats-label">8米以下道路長度 (m)</div>
+						<div class="stats-value">1,439,966.64</div>
+						<div class="stats-change">同比去年: 3.35% ▾</div>
+					</div>
+				</div>
+			</div>
+			<!-- Road Area Stats -->
+			<div class="stats-card">
+				<div class="stats-title">道路面積總覽</div>
+				<div class="stats-grid3">
+					<div class="stats-item">
+						<div class="stats-label">道路面積 (m²)</div>
+						<div class="stats-value">15,476,211.45</div>
+					</div>
+	
+					<div class="stats-item">
+						<div class="stats-label">8米以上道路面積 (m²)</div>
+						<div class="stats-value">15,476,211.45</div>
+					</div>
+	
+					<div class="stats-item">
+						<div class="stats-label">8米以下道路面積 (m²)</div>
+						<div class="stats-value">8,906,351.09</div>
+					</div>
+				</div>
+			</div>
+		 </div>
+
+
+		<!-- Road Issues Stats -->
+		<div class="stats-card">
+			<div class="stats-title">巡檢異常總覽</div>
+			<div class="date-selector">
+				<span>2025-01-01</span> ~ <span>2025-03-02</span>
+			</div>
+
+			<div class="chart-container">
+				<div class="chart">
+					<div class="chart-circle" style="background: conic-gradient(#4a86e8 0% 61.5%, #eee 61.5% 100%);">
+					</div>
+					<div class="chart-info">
+						<div class="chart-value">855</div>
+						<div class="chart-label">坑洞</div>
+						<div class="chart-percent">占比 61.5%</div>
+					</div>
+				</div>
+
+				<div class="chart">
+					<div class="chart-circle" style="background: conic-gradient(#7cb342 0% 30%, #eee 30% 100%);"></div>
+					<div class="chart-info">
+						<div class="chart-value">417</div>
+						<div class="chart-label">隆起或凹陷</div>
+						<div class="chart-percent">占比 30%</div>
+					</div>
+				</div>
+
+				<div class="chart">
+					<div class="chart-circle" style="background: conic-gradient(#5c6bc0 0% 8.5%, #eee 8.5% 100%);">
+					</div>
+					<div class="chart-info">
+						<div class="chart-value">118</div>
+						<div class="chart-label">其他異常</div>
+						<div class="chart-percent">占比 8.5%</div>
+					</div>
+				</div>
+
+				<div class="stats-item">
+					<div class="stats-label">道路巡檢異常數量</div>
+					<div class="stats-value">1390</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Map and Table Section -->
+		<div class="map-section">
+			<!-- Map -->
+			<div class="map-container">
+				<div class="stats-title">30日內道路缺失未改善區域統計分布及排行</div>
+				<div class="stats-row">
+					<img src="map.png" style="width: 50%" alt="Map">
+					<div style="flex-grow: 1;">
+						<div style="display: flex; align-items: center; margin-bottom: 10px;">
+							<div
+								style="width: 20px; height: 20px; background-color: #333; border-radius: 50%; margin-right: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+								1</div>
+							<div>香山區</div>
+							<div class="progress-bar" style="flex-grow: 1; margin-left: 20px;">
+								<div class="progress-fill" style="width: 100%;"></div>
+							</div>
+							<div>25</div>
+						</div>
+	
+						<div style="display: flex; align-items: center; margin-bottom: 10px;">
+							<div
+								style="width: 20px; height: 20px; background-color: #333; border-radius: 50%; margin-right: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+								2</div>
+							<div>東區</div>
+							<div class="progress-bar" style="flex-grow: 1; margin-left: 20px;">
+								<div class="progress-fill" style="width: 60%;"></div>
+							</div>
+							<div>15</div>
+						</div>
+	
+						<div style="display: flex; align-items: center;">
+							<div
+								style="width: 20px; height: 20px; background-color: #333; border-radius: 50%; margin-right: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+								3</div>
+							<div>北區</div>
+							<div class="progress-bar" style="flex-grow: 1; margin-left: 20px;">
+								<div class="progress-fill" style="width: 40%;"></div>
+							</div>
+							<div>10</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+			<!-- Table -->
+			<div class="data-table">
+				<div class="stats-title">香山區30日內道路缺失未改善案件數量</div>
+				<table>
+					<thead>
+						<tr>
+							<th>路名</th>
+							<th>數量</th>
+							<th>詳細資訊</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>中華路五段</td>
+							<td>2</td>
+							<td><a href="#" class="view-details">檢視</a></td>
+						</tr>
+						<tr>
+							<td>西濱路三段</td>
+							<td>3</td>
+							<td><a href="#" class="view-details">檢視</a></td>
+						</tr>
+						<tr>
+							<td>大湖路</td>
+							<td>5</td>
+							<td><a href="#" class="view-details">檢視</a></td>
+						</tr>
+						<tr>
+							<td>延平路二段</td>
+							<td>6</td>
+							<td><a href="#" class="view-details">檢視</a></td>
+						</tr>
+						<tr>
+							<td>竹香南路</td>
+							<td>7</td>
+							<td><a href="#" class="view-details">檢視</a></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

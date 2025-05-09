@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新竹市道路養護工程資訊管理系統 - 登入</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft JhengHei", "微軟正黑體", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background-color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .system-title {
+            color: #3a4a5b;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .header-nav {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .header-nav-item {
+            color: #3a4a5b;
+            padding: 5px 10px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .header-nav-item.active {
+            border-bottom: 3px solid #4481eb;
+            color: #4481eb;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .main-container {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .login-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 30px;
+            width: 500px;
+            max-width: 90%;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+        }
+        
+        .login-title {
+            color: #3a4a5b;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        
+        .user-type {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-section {
+            margin-bottom: 15px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        .form-input:focus {
+            border-color: #4481eb;
+        }
+        
+        .captcha-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .captcha-input {
+            flex: 1;
+        }
+        
+        .captcha-image {
+            width: 120px;
+            height: 40px;
+            background: linear-gradient(135deg, #c3d1e8, #8badde);
+            margin-left: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: #333;
+            font-weight: bold;
+            letter-spacing: 5px;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.7);
+        }
+        
+        .button {
+            padding: 12px 20px;
+            background-color: #4481eb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-align: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .button:hover {
+            background-color: #3a70d6;
+        }
+        
+        .citizen-actions {
+            background-color: #eef2f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .report-button {
+            padding: 12px;
+            background-color: #eef2f9;
+            color: #4481eb;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-align: center;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .report-button:hover {
+            background-color: #dce6f7;
+        }
+        
+        .divider {
+            height: 1px;
+            background-color: #ddd;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-container">
+            <img src="logo.png" class="logo" alt="新竹市標誌">
+            <h1 class="system-title">新竹市道路養護工程資訊管理系統</h1>
+        </div>
+        <!-- <div class="header-nav">
+            <a href="#" class="header-nav-item">數據儀表板</a>
+            <a href="#" class="header-nav-item active">使用者</a>
+        </div> -->
+    </div>
+    
+    <div class="main-container">
+        <div class="login-container">
+            <div class="login-header">
+                <img src="logo.png" class="login-logo" alt="新竹市標誌">
+                <h2 class="login-title">新竹市道路養護工程資訊管理系統</h2>
+            </div>
+            
+            <div class="citizen-actions">
+                <h3 class="user-type">一般民眾使用</h3>
+                <button class="report-button">損壞通報（道路、人行道、路燈）</button>
+                <button class="report-button">損壞通報查詢</button>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="form-section">
+                <h3 class="user-type">公務使用</h3>
+                <form class="login-form">
+                    <input type="text" class="form-input" placeholder="輸入帳號">
+                    <input type="password" class="form-input" placeholder="輸入密碼">
+                    <div class="captcha-container">
+                        <input type="text" class="form-input captcha-input" placeholder="輸入驗證碼">
+                        <div class="captcha-image">497559</div>
+                    </div>
+                    <button type="submit" class="button">登入系統</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

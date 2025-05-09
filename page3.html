@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>新竹市道路養護工程資訊管理系統</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+		integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap-grid.min.css"
+		integrity="sha512-i1b/nzkVo97VN5WbEtaPebBG8REvjWeqNclJ6AItj7msdVcaveKrlIIByDpvjk5nwHjXkIqGZscVxOrTb9tsMA=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highcharts/12.2.0/css/highcharts.min.css"
+		integrity="sha512-VmbsrIDEOfvVDWUC+oBsF6TueQH099Fkeli3tYCdoWKqMlFQSnq28PsutD8X8iqIomh6n/1VtKG26Nv7+OKyNQ=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+	<link rel="stylesheet" href="page.css">
+</head>
+
+<body>
+	<script>
+		// Add event listener for mobile menu toggle
+		document.addEventListener('DOMContentLoaded', function () {
+			const menuToggle = document.querySelector('.menu-toggle');
+			const sidebar = document.querySelector('.sidebar');
+
+			if (menuToggle && sidebar) {
+				menuToggle.addEventListener('click', function () {
+					sidebar.classList.toggle('active');
+				});
+			}
+
+			// Responsive handling - close sidebar when clicking outside on mobile
+			document.addEventListener('click', function (event) {
+				if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
+					if (!sidebar.contains(event.target) && event.target !== menuToggle) {
+						sidebar.classList.remove('active');
+					}
+				}
+			});
+
+			// Adjust layout on window resize
+			window.addEventListener('resize', function () {
+				if (window.innerWidth > 768) {
+					sidebar.classList.remove('active');
+				}
+			});
+		});
+	</script>
+	<!-- Header -->
+	<div class="header">
+		<div class="menu-toggle">☰</div>
+		<div class="logo">
+			<img src="logo.png" alt="Logo">
+			<div class="logo-text">新竹市道路養護工程資訊管理系統</div>
+		</div>
+		<div class="nav-tabs">
+			<div class="nav-tab">GIS圖台</div>
+			<div class="nav-tab">數據儀表板</div>
+			<div class="nav-tab">道路業務</div>
+			<div class="nav-tab">路燈業務</div>
+			<div class="nav-tab active">資訊整合查詢</div>
+		</div>
+		<div class="user-area">
+			<div class="user-icon">U</div>
+			<span class="login-text">使用者</span>
+			<a href="#" class="logout">登出</a>
+		</div>
+	</div>
+
+	<!-- Sidebar -->
+	<div class="sidebar" style="width: 300px;">
+		<div class="rounded shadow-lg p-3 mb-3">
+			<h5 class="fw-bold">年度歲修</h5>
+			<table class="table table-striped">
+				<tr>
+					<th>廠商名稱</th>
+					<td>OO公司</td>
+				</tr>
+				<tr>
+					<th>施工日期</th>
+					<td>114年4月26日~<br/>114年4月29日</td>
+				</tr>
+				<tr>
+					<th>保固日期</th>
+					<td>114年4月30日~<br/>115年4月30日</td>
+				</tr>
+			</table>
+		</div>
+		<div class="rounded shadow-lg p-3 mb-3">
+			<h5 class="fw-bold">機動養護</h5>
+			<table class="table table-striped">
+				<tr>
+					<th>廠商名稱</th>
+					<td>OO公司</td>
+				</tr>
+				<tr>
+					<th>施工日期</th>
+					<td>113年12月25日~<br />113年12月29日</td>
+				</tr>
+			</table>
+		</div>
+		<div class="rounded shadow-lg p-3">
+			<h5 class="fw-bold">道路挖掘</h5>
+			<table class="table table-striped">
+				<tr>
+					<th>挖掘單位</th>
+					<td>台電公司</td>
+				</tr>
+				<tr>
+					<th>挖掘日期</th>
+					<td>114年1月4日~<br />114年1月5日</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+	<!-- Main Content -->
+	<div class="main-content" style="margin-left: 300px;">
+		<div class="row">
+			<div class="col-8">
+				<div class="stats-card">
+					<div id="container" style="width: 100%; height: 290px;"></div>
+				</div>
+				<div class="stats-card">
+					<img src="sv.png" style="width: 100%;" alt="">
+				</div>
+			</div>
+			<div class="col-4">
+				<div class="stats-card">
+					<h5 class="fw-bold">道路查詢</h5>
+					<div class="row g-1">
+						<div class="col">
+							<input type="text" class="form-control" value="鐵道路三段">
+						</div>
+						<div class="col-auto">
+							<button type="button" class="btn btn-primary">查詢</button>
+						</div>
+					</div>
+				</div>
+				<div class="stats-card">
+					<div id="iri-chart" style="height: 325px;"></div>
+				</div>
+				<div class="stats-card">
+					<div id="pci-chart" style="height: 320px;"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/12.2.0/highcharts.min.js"
+		integrity="sha512-dJzfC2kfKm1ty6FGuzkVN95rs2Jl0O5zmUkn0RmCoAsHaPZA1NkJ11PKL9Gmgmb4rKbyyaGQgNZgrKro0olN6A=="
+		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script>
+		Highcharts.chart('container', {
+			chart: {
+				zoomType: 'x'
+			},
+			title: {
+				text: ''
+			},
+			xAxis: {
+				title: { text: null },
+				tickInterval: 20,
+				min: 0,
+				max: 240
+			},
+			yAxis: [{
+				title: { text: 'PCI' },
+				min: 72,
+				max: 104,
+				labels: {
+					format: 'PCI: {value}'
+				}
+			}, {
+				title: {
+					text: 'IRI',
+					style: { color: '#007BFF' }
+				},
+				opposite: true,
+				min: 1.5,
+				max: 7.5,
+				labels: {
+					format: 'IRI: {value}',
+					style: { color: '#007BFF' }
+				}
+			}],
+			tooltip: {
+				shared: true,
+				valueDecimals: 2,
+				formatter: function () {
+					const iriPoint = this.points.find(p => p.series.name === 'IRI');
+					const pciPoint = this.points.find(p => p.series.name === 'PCI');
+					return `
+	            <b>${this.x}</b><br/>
+	            <span style="color:${iriPoint.color}">\u25CF</span> IRI: ${iriPoint.y.toFixed(2)}<br/>
+	            <span style="color:${pciPoint.color}">\u25CF</span> PCI: ${pciPoint.y.toFixed(1)}
+	          `;
+				}
+			},
+			legend: { enabled: false },
+			series: [{
+				name: 'IRI',
+				type: 'spline',
+				yAxis: 1,
+				color: '#007BFF',
+				marker: {
+					enabled: true,
+					radius: 4
+				},
+				data: [
+					{ x: 20, y: 2.5 },
+					{ x: 40, y: 3.4 },
+					{ x: 60, y: 4.1 },
+					{ x: 80, y: 4.8 },
+					{ x: 100, y: 3.84 },
+					{ x: 120, y: 3.1 },
+					{ x: 140, y: 2.4 },
+					{ x: 160, y: 2.3 },
+					{ x: 180, y: 2.5 },
+					{ x: 200, y: 3.9 },
+					{ x: 220, y: 3.7 },
+					{ x: 240, y: 3.5 }
+				]
+			}, {
+				name: 'PCI',
+				type: 'spline',
+				yAxis: 0,
+				color: '#333',
+				marker: {
+					enabled: true,
+					radius: 4
+				},
+				data: [
+					{ x: 20, y: 80 },
+					{ x: 40, y: 88 },
+					{ x: 60, y: 95 },
+					{ x: 80, y: 100 },
+					{ x: 100, y: 93.3 },
+					{ x: 120, y: 91 },
+					{ x: 140, y: 94 },
+					{ x: 160, y: 97 },
+					{ x: 180, y: 95 },
+					{ x: 200, y: 93 },
+					{ x: 220, y: 92 },
+					{ x: 240, y: 93 }
+				]
+			}],
+			credits: false
+		});
+	
+		Highcharts.chart('iri-chart', {
+				chart: {
+					type: 'pie'
+				},
+				title: {
+					text: 'IRI指標',
+					align: 'left',
+					style: {
+						fontWeight: 'bold',
+						fontSize: '16px'
+					}
+				},
+				tooltip: {
+					pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+				},
+				series: [{
+					name: 'IRI分布',
+					innerSize: '50%',
+					colorByPoint: false,
+					dataLabels: {
+						enabled: true,
+						format: '{point.name}<br>{point.percentage:.1f} %',
+						style: {
+							color: '#000',
+							fontWeight: 'bold'
+						}
+					},
+					data: [
+						{ name: '0–3.5', y: 54.0, color: '#7AC143' },   // 綠
+						{ name: '3.5–5', y: 28.0, color: '#FFD34E' },   // 黃
+						{ name: '5–7.5', y: 18.0, color: '#FF5A5F' }    // 紅
+					]
+				}],
+				credits: false
+			});
+			Highcharts.chart('pci-chart', {
+					chart: {
+						type: 'pie'
+					},
+					title: {
+						text: 'PCI指標',
+						align: 'left',
+						style: {
+							fontWeight: 'bold',
+							fontSize: '16px'
+						}
+					},
+					tooltip: {
+						pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+					},
+					series: [{
+						name: 'PCI分布',
+						innerSize: '50%',
+						colorByPoint: false,
+						dataLabels: {
+							enabled: true,
+							format: '{point.name}<br>{point.percentage:.1f} %',
+							style: {
+								color: '#000',
+								fontWeight: 'bold'
+							}
+						},
+						data: [
+							{ name: '0–3.5', y: 154.0, color: '#7AC143' },   // 綠
+							{ name: '3.5–5', y: 28.0, color: '#FFD34E' },   // 黃
+						]
+					}],
+					credits: false
+				});
+	</script>
+</body>
+
+</html>

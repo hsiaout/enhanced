@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>新竹市道路養護工程資訊管理系統</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+		integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap-grid.min.css"
+		integrity="sha512-i1b/nzkVo97VN5WbEtaPebBG8REvjWeqNclJ6AItj7msdVcaveKrlIIByDpvjk5nwHjXkIqGZscVxOrTb9tsMA=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highcharts/12.2.0/css/highcharts.min.css"
+		integrity="sha512-VmbsrIDEOfvVDWUC+oBsF6TueQH099Fkeli3tYCdoWKqMlFQSnq28PsutD8X8iqIomh6n/1VtKG26Nv7+OKyNQ=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+	<link rel="stylesheet" href="page.css">
+</head>
+
+<body>
+	<script>
+		// Add event listener for mobile menu toggle
+		document.addEventListener('DOMContentLoaded', function () {
+			const menuToggle = document.querySelector('.menu-toggle');
+			const sidebar = document.querySelector('.sidebar');
+
+			if (menuToggle && sidebar) {
+				menuToggle.addEventListener('click', function () {
+					sidebar.classList.toggle('active');
+				});
+			}
+
+			// Responsive handling - close sidebar when clicking outside on mobile
+			document.addEventListener('click', function (event) {
+				if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
+					if (!sidebar.contains(event.target) && event.target !== menuToggle) {
+						sidebar.classList.remove('active');
+					}
+				}
+			});
+
+			// Adjust layout on window resize
+			window.addEventListener('resize', function () {
+				if (window.innerWidth > 768) {
+					sidebar.classList.remove('active');
+				}
+			});
+		});
+	</script>
+	<!-- Header -->
+	<div class="header">
+		<div class="menu-toggle">☰</div>
+		<div class="logo">
+			<img src="logo.png" alt="Logo">
+			<div class="logo-text">新竹市道路養護工程資訊管理系統</div>
+		</div>
+		<div class="nav-tabs">
+			<div class="nav-tab active">GIS圖台</div>
+			<div class="nav-tab">數據儀表板</div>
+			<div class="nav-tab">道路業務</div>
+			<div class="nav-tab">路燈業務</div>
+			<div class="nav-tab">資訊整合查詢</div>
+		</div>
+		<div class="user-area">
+			<div class="user-icon">U</div>
+			<span class="login-text">使用者</span>
+			<a href="#" class="logout">登出</a>
+		</div>
+	</div>
+
+	<!-- Sidebar -->
+	<div class="sidebar">
+		<div class="menu-item">
+			<i>📚</i>
+			<span>道路巡查</span>
+		</div>
+		<div class="menu-item"><i>🔢</i><span>指標分析</span></div>
+		<div class="menu-item"><i>🛻</i><span>自主巡查</span></div>
+		<div class="menu-item"><i>📢</i><span>機關通報</span></div>
+		<div class="menu-item"><i>📈</i><span>統計分析</span></div>
+		<!-- <div class="submenu-item active">首頁</div>
+		<div class="submenu-item">施工查詢</div>
+		<div class="submenu-item">坑洞通報</div> -->
+	</div>
+
+	<!-- Main Content -->
+	<div class="main-content">
+		
+	</div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/12.2.0/highcharts.min.js"
+		integrity="sha512-dJzfC2kfKm1ty6FGuzkVN95rs2Jl0O5zmUkn0RmCoAsHaPZA1NkJ11PKL9Gmgmb4rKbyyaGQgNZgrKro0olN6A=="
+		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</body>
+
+</html>

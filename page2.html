@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>新竹市道路養護工程資訊管理系統</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap-grid.min.css"
+		integrity="sha512-i1b/nzkVo97VN5WbEtaPebBG8REvjWeqNclJ6AItj7msdVcaveKrlIIByDpvjk5nwHjXkIqGZscVxOrTb9tsMA=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<link rel="stylesheet" href="page.css">
+</head>
+
+<body>
+	<script>
+		// Add event listener for mobile menu toggle
+		document.addEventListener('DOMContentLoaded', function () {
+			const menuToggle = document.querySelector('.menu-toggle');
+			const sidebar = document.querySelector('.sidebar');
+
+			if (menuToggle && sidebar) {
+				menuToggle.addEventListener('click', function () {
+					sidebar.classList.toggle('active');
+				});
+			}
+
+			// Responsive handling - close sidebar when clicking outside on mobile
+			document.addEventListener('click', function (event) {
+				if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
+					if (!sidebar.contains(event.target) && event.target !== menuToggle) {
+						sidebar.classList.remove('active');
+					}
+				}
+			});
+
+			// Adjust layout on window resize
+			window.addEventListener('resize', function () {
+				if (window.innerWidth > 768) {
+					sidebar.classList.remove('active');
+				}
+			});
+		});
+	</script>
+	<!-- Header -->
+	<div class="header">
+		<div class="menu-toggle">☰</div>
+		<div class="logo">
+			<img src="logo.png" alt="Logo">
+			<div class="logo-text">新竹市道路養護工程資訊管理系統</div>
+		</div>
+		<div class="nav-tabs">
+			<div class="nav-tab active">數據儀表板</div>
+			<div class="nav-tab">GIS圖台</div>
+			<div class="nav-tab">道路業務</div>
+			<div class="nav-tab">路燈業務</div>
+			<div class="nav-tab">資訊整合查詢</div>
+		</div>
+		<div class="user-area">
+			<div class="user-icon">U</div>
+			<span class="login-text">使用者</span>
+			<a href="#" class="logout">登出</a>
+		</div>
+	</div>
+
+	<!-- Sidebar -->
+	<div class="sidebar">
+		<div class="menu-item active">
+			<i>📊</i>
+			<span>數據中心</span>
+		</div>
+		<div class="submenu-item">道路數據</div>
+		<div class="submenu-item active">路徑數據</div>
+
+		<div class="menu-item">
+			<i>📋</i>
+			<span>功能項目</span>
+		</div>
+
+		<div class="menu-item">
+			<i>📖</i>
+			<span>操作手冊</span>
+		</div>
+
+		<div class="menu-item">
+			<i>⚙️</i>
+			<span>設定</span>
+		</div>
+	</div>
+
+	<!-- Main Content -->
+	<div class="main-content">
+		<!-- Welcome Banner -->
+		<div class="welcome-banner">
+			<div class="banner-title">路燈數據</div>
+			<div class="banner-desc">一站式管理平台，幫助您以視覺化方式</div>
+			<div class="banner-desc">有效率的管理道路</div>
+		</div>
+
+		<div class="stats-row">
+			<!-- Road Length Stats -->
+			<div class="stats-card">
+				<div class="stats-title">路燈數量總覽</div>
+				<div class="stats-grid3">
+					<div class="stats-item">
+						<div class="stats-label">總數量（盞）</div>
+						<div class="stats-value">29,543</div>
+						<div class="stats-change">去年同比: 8.63% ▲</div>
+					</div>
+	
+					<div class="stats-item">
+						<div class="stats-label">維護改善數量（盞）</div>
+						<div class="stats-value">6,120</div>
+						<div class="stats-change">同比去年: 4.07% ▲</div>
+					</div>
+	
+					<div class="stats-item">
+						<div class="stats-label">汰換為LED路燈（盞）</div>
+						<div class="stats-value">1,426</div>
+						<div class="stats-change">同比去年: 3.35% ▾</div>
+					</div>
+				</div>
+			</div>
+			<!-- Road Area Stats -->
+			<div class="stats-card">
+				<div class="stats-title">路燈養護即時資訊(本日)</div>
+				<div class="stats-grid4">
+					<div class="stats-item">
+						<div class="stats-label">設備總數</div>
+						<div class="stats-value">29,543</div>
+					</div>
+	
+					<div class="stats-item">
+						<div class="stats-label">報修路燈</div>
+						<div class="stats-value">37</div>
+					</div>
+	
+					<div class="stats-item">
+						<div class="stats-label">派工路燈</div>
+						<div class="stats-value">24</div>
+					</div>
+
+					<div class="stats-item">
+						<div class="stats-label">完工路燈</div>
+						<div class="stats-value">23</div>
+					</div>
+				</div>
+			</div>
+		 </div>
+
+
+		<!-- Road Issues Stats -->
+		<div class="stats-card">
+			<div class="stats-title">查報異常總覽</div>
+			<div class="date-selector">
+				<span>2025-01-01</span> ~ <span>2025-03-02</span>
+			</div>
+
+			<div class="chart-container">
+				<div class="chart">
+					<div class="chart-circle" style="background: conic-gradient(#4a86e8 0% 87.6%, #eee 87.6% 100%);">
+					</div>
+					<div class="chart-info">
+						<div class="chart-value">1,352</div>
+						<div class="chart-label">路燈不亮</div>
+						<div class="chart-percent">占比 87.6%</div>
+					</div>
+				</div>
+
+				<div class="chart">
+					<div class="chart-circle" style="background: conic-gradient(#7cb342 0% 7.5%, #eee 7.5% 100%);"></div>
+					<div class="chart-info">
+						<div class="chart-value">115</div>
+						<div class="chart-label">全天亮</div>
+						<div class="chart-percent">占比 7.5%</div>
+					</div>
+				</div>
+
+				<div class="chart">
+					<div class="chart-circle" style="background: conic-gradient(#5c6bc0 0% 4.9%, #eee 4.9% 100%);">
+					</div>
+					<div class="chart-info">
+						<div class="chart-value">76</div>
+						<div class="chart-label">其他異常</div>
+						<div class="chart-percent">占比 4.9%</div>
+					</div>
+				</div>
+
+				<div class="stats-item">
+					<div class="stats-label">路燈查報異常數量</div>
+					<div class="stats-value">1,543</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Map and Table Section -->
+		<div class="map-section">
+			<!-- Map -->
+			<div class="map-container">
+				<div class="stats-title">60日內路燈維修區域分布及排行</div>
+				<div class="stats-row">
+					<img src="map.png" style="width: 50%" alt="Map">
+					<div style="flex-grow: 1;">
+						<div style="display: flex; align-items: center; margin-bottom: 10px;">
+							<div
+								style="width: 20px; height: 20px; background-color: #333; border-radius: 50%; margin-right: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+								1</div>
+							<div>東區</div>
+							<div class="progress-bar" style="flex-grow: 1; margin-left: 20px;">
+								<div class="progress-fill" style="width: 100%;"></div>
+							</div>
+							<div>422</div>
+						</div>
+	
+						<div style="display: flex; align-items: center; margin-bottom: 10px;">
+							<div
+								style="width: 20px; height: 20px; background-color: #333; border-radius: 50%; margin-right: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+								2</div>
+							<div>北區</div>
+							<div class="progress-bar" style="flex-grow: 1; margin-left: 20px;">
+								<div class="progress-fill" style="width: 10%;"></div>
+							</div>
+							<div>15</div>
+						</div>
+	
+						<div style="display: flex; align-items: center;">
+							<div
+								style="width: 20px; height: 20px; background-color: #333; border-radius: 50%; margin-right: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+								3</div>
+							<div>香山區</div>
+							<div class="progress-bar" style="flex-grow: 1; margin-left: 20px;">
+								<div class="progress-fill" style="width: 8%;"></div>
+							</div>
+							<div>10</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+			<!-- Table -->
+			<div class="data-table">
+				<div class="stats-title">東區30日內路燈維護案件數量</div>
+				<table>
+					<thead>
+						<tr>
+							<th>路燈編號</th>
+							<th>所屬村里</th>
+							<th>累計維修次數</th>
+							<th>詳細資訊</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>120682</td>
+							<td>千甲里</td>
+							<td>4</td>
+							<td><a href="#" class="view-details">檢視</a></td>
+						</tr>
+						<tr>
+							<td>143111</td>
+							<td>公園里</td>
+							<td>3</td>
+							<td><a href="#" class="view-details">檢視</a></td>
+						</tr>
+						<tr>
+							<td>437807</td>
+							<td>東山里</td>
+							<td>3</td>
+							<td><a href="#" class="view-details">檢視</a></td>
+						</tr>
+						<tr>
+							<td>327036</td>
+							<td>東勢里</td>
+							<td>2</td>
+							<td><a href="#" class="view-details">檢視</a></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

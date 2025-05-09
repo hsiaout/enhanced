@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>新竹市道路養護工程資訊管理系統</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+		integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap-grid.min.css"
+		integrity="sha512-i1b/nzkVo97VN5WbEtaPebBG8REvjWeqNclJ6AItj7msdVcaveKrlIIByDpvjk5nwHjXkIqGZscVxOrTb9tsMA=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highcharts/12.2.0/css/highcharts.min.css"
+		integrity="sha512-VmbsrIDEOfvVDWUC+oBsF6TueQH099Fkeli3tYCdoWKqMlFQSnq28PsutD8X8iqIomh6n/1VtKG26Nv7+OKyNQ=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+	<link rel="stylesheet" href="page.css">
+</head>
+
+<body>
+	<script>
+		// Add event listener for mobile menu toggle
+		document.addEventListener('DOMContentLoaded', function () {
+			const menuToggle = document.querySelector('.menu-toggle');
+			const sidebar = document.querySelector('.sidebar');
+
+			if (menuToggle && sidebar) {
+				menuToggle.addEventListener('click', function () {
+					sidebar.classList.toggle('active');
+				});
+			}
+
+			// Responsive handling - close sidebar when clicking outside on mobile
+			document.addEventListener('click', function (event) {
+				if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
+					if (!sidebar.contains(event.target) && event.target !== menuToggle) {
+						sidebar.classList.remove('active');
+					}
+				}
+			});
+
+			// Adjust layout on window resize
+			window.addEventListener('resize', function () {
+				if (window.innerWidth > 768) {
+					sidebar.classList.remove('active');
+				}
+			});
+		});
+	</script>
+	<!-- Header -->
+	<div class="header">
+		<div class="menu-toggle">☰</div>
+		<div class="logo">
+			<img src="logo.png" alt="Logo">
+			<div class="logo-text">新竹市道路養護工程資訊管理系統</div>
+		</div>
+		<div class="nav-tabs">
+			<div class="nav-tab active">民眾服務</div>
+		</div>
+		<div class="user-area">
+			<div class="user-icon">U</div>
+			<span class="login-text">使用者</span>
+			<a href="#" class="logout">登出</a>
+		</div>
+	</div>
+
+	<!-- Sidebar -->
+	<div class="sidebar">
+		<div class="menu-item active">
+			<i>🔧</i>
+			<span>報修</span>
+		</div>
+		<div class="submenu-item">坑洞通報</div>
+		<div class="submenu-item active">路燈報修</div>
+		<div class="menu-item">
+			<i>🔍</i>
+			<span>查詢</span>
+		</div>
+		<div class="submenu-item">施工查詢</div>
+		<div class="submenu-item">路燈報修進度</div>
+		<div class="submenu-item">坑洞案件進度</div>
+	</div>
+
+	<!-- Main Content -->
+	<div class="main-content" style="    background: url(page-bg.png);
+    background-size: 100%;
+    background-position: center;
+    height: calc(100vh - 67px);">
+		<div class="container">
+			<div class="mt-4">
+				<h3 class="mr-4 mb-3"><i class="fas fa-wrench mr-2"></i> 路燈報修 </h3>
+				<div class="btn-group" role="group" aria-label="Vertical radio toggle button group">
+					<input type="radio" class="btn-check" name="vbtn-radio" id="vbtn-radio1" autocomplete="off" checked>
+					<label class="btn btn-outline-secondary" for="vbtn-radio1">知道路燈編號</label>
+					<input type="radio" class="btn-check" name="vbtn-radio" id="vbtn-radio2" autocomplete="off">
+					<label class="btn btn-outline-secondary" for="vbtn-radio2">不知道路燈編號</label>
+				</div>
+			</div>
+			<div class="row mt-2">
+				<div class="col-sm-12">
+					<div class="card">
+						<div class="card-body">
+							<div class="row">
+								<div class="col-12">
+									<h4>路燈資訊</h4>
+								</div>
+							</div>
+							<div class="row" style="">
+								<div class="col-sm-6">
+									<div class="form-group form-group-lg"><label for="light-id"
+											class="required">路燈編號</label><input type="text" class="form-control"
+											placeholder="請填入7位數字" required=""><a href="javascript:;">路燈編號怎麼看?</a></div>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group"><label for="fault-type" class="required">故障類別</label>
+										<select name="fault-type" id="fault-type" class="form-select selectpicker"  title="請選擇" tabindex="-98">
+											<option class="bs-title-option" value="">請選擇</option>
+											<option value="1">路燈不亮</option>
+											<option value="2">全天亮</option>
+											<option value="3">時亮時不亮</option>
+											<option value="4">整排路燈不亮</option>
+											<option value="5">漏電火花</option>
+											<option value="6">燈桿傾斜或折斷</option>
+											<option value="7">燈具損壞或不亮</option>
+											<option value="8">閃爍</option>
+											<option value="9">燈頭不見</option>
+											<option value="10">控制器離線</option>
+											<option value="11">功率不足</option>
+											<option value="12">其他狀況</option>
+											<option value="82">廢線廢牌不明附掛物處理</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-12">
+									<hr>
+								</div>
+								<div class="col-12">
+									<h5>地址 / 位置</h5>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group"><label for="district" class="required">行政區</label>
+										<select name="fault-type" id="fault-type" class="form-select selectpicker" title="請選擇" tabindex="-98">
+											<option class="bs-title-option" value="">請選擇</option>
+											<option value="1">路燈不亮</option>
+											<option value="2">全天亮</option>
+											<option value="3">時亮時不亮</option>
+											<option value="4">整排路燈不亮</option>
+											<option value="5">漏電火花</option>
+											<option value="6">燈桿傾斜或折斷</option>
+											<option value="7">燈具損壞或不亮</option>
+											<option value="8">閃爍</option>
+											<option value="9">燈頭不見</option>
+											<option value="10">控制器離線</option>
+											<option value="11">功率不足</option>
+											<option value="12">其他狀況</option>
+											<option value="82">廢線廢牌不明附掛物處理</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group"><label for="village">里</label>
+										<select name="fault-type" id="fault-type" class="form-select selectpicker" title="請選擇" tabindex="-98">
+											<option class="bs-title-option" value="">請選擇</option>
+											<option value="1">路燈不亮</option>
+											<option value="2">全天亮</option>
+											<option value="3">時亮時不亮</option>
+											<option value="4">整排路燈不亮</option>
+											<option value="5">漏電火花</option>
+											<option value="6">燈桿傾斜或折斷</option>
+											<option value="7">燈具損壞或不亮</option>
+											<option value="8">閃爍</option>
+											<option value="9">燈頭不見</option>
+											<option value="10">控制器離線</option>
+											<option value="11">功率不足</option>
+											<option value="12">其他狀況</option>
+											<option value="82">廢線廢牌不明附掛物處理</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-sm-12">
+									<div class="form-group"><label for="" class="required">詳細位置</label><input type="text"
+											class="form-control" disabled="" required=""
+											style="background-color: rgb(233, 236, 239);"></div>
+								</div>
+								<div class="col-12">
+									<hr>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group"><label for="" class="required">姓名</label><input type="text"
+											class="form-control" required=""></div>
+								</div>
+								<div class="w-100"></div>
+								<div class="col-sm-6">
+									<div class="form-group"><label for="" class="required">聯絡電話</label><input type="text"
+											class="form-control" required=""></div>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group"><label>Email</label><input type="text" class="form-control">
+										<div class="mt-1">
+											<div class="form-check"><input type="checkbox" class="form-check-input checkbox-md"
+													id="done_email"><label class="form-check-label"
+													for="done_email">接收完工email通知</label></div>
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-12">
+									<div class="form-group"><label>備註</label><textarea class="form-control"
+											placeholder="如地址錯誤，請在此輸入正確地址"></textarea></div>
+								</div>
+								<div class="col-12">
+									<hr>
+								</div>
+							</div>
+							<div class="row" style="display: none;">
+								<div class="col-sm-6">
+									<div class="form-group"><label for="fault-type" class="required">故障類別</label>
+										<div class="dropdown bootstrap-select form-control"><select name="fault-type"
+												id="fault-type" class="form-control selectpicker" title="請選擇" tabindex="-98">
+												<option class="bs-title-option" value=""></option>
+												<option value="1">路燈不亮</option>
+												<option value="2">全天亮</option>
+												<option value="3">時亮時不亮</option>
+												<option value="4">整排路燈不亮</option>
+												<option value="5">漏電火花</option>
+												<option value="6">燈桿傾斜或折斷</option>
+												<option value="7">燈具損壞或不亮</option>
+												<option value="8">閃爍</option>
+												<option value="9">燈頭不見</option>
+												<option value="10">控制器離線</option>
+												<option value="11">功率不足</option>
+												<option value="12">其他狀況</option>
+												<option value="82">廢線廢牌不明附掛物處理</option>
+											</select><button type="button" class="btn dropdown-toggle bs-placeholder btn-light"
+												data-toggle="dropdown" role="button" data-id="fault-type" title="請選擇">
+												<div class="filter-option">
+													<div class="filter-option-inner">
+														<div class="filter-option-inner-inner">請選擇</div>
+													</div>
+												</div>
+											</button>
+											<div class="dropdown-menu " role="combobox"
+												style="max-height: 208px; overflow: hidden; min-width: 211px;">
+												<div class="inner show" role="listbox" aria-expanded="false" tabindex="-1"
+													style="max-height: 198px; overflow-y: auto;">
+													<ul class="dropdown-menu inner show">
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">路燈不亮</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">全天亮</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">時亮時不亮</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">整排路燈不亮</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">漏電火花</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">燈桿傾斜或折斷</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">燈具損壞或不亮</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">閃爍</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">燈頭不見</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">控制器離線</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">功率不足</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">其他狀況</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">廢線廢牌不明附掛物處理</span></a></li>
+													</ul>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-12">
+									<hr>
+								</div>
+								<div class="col-12">
+									<h5>地址 / 位置</h5>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group"><label for="district" class="required">行政區</label>
+										<div class="dropdown bootstrap-select form-control"><select name="district"
+												id="district" class="form-control selectpicker" title="請選擇" tabindex="-98">
+												<option class="bs-title-option" value=""></option>
+												<option value=""></option>
+												<option value="7">桃園區</option>
+												<option value="1">中壢區</option>
+												<option value="10">大溪區</option>
+												<option value="4">楊梅區</option>
+												<option value="13">蘆竹區</option>
+												<option value="12">大園區</option>
+												<option value="8">龜山區</option>
+												<option value="9">八德區</option>
+												<option value="3">龍潭區</option>
+												<option value="2">平鎮區</option>
+												<option value="5">新屋區</option>
+												<option value="6">觀音區</option>
+												<option value="11">復興區</option>
+											</select><button type="button" class="btn dropdown-toggle bs-placeholder btn-light"
+												data-toggle="dropdown" role="button" data-id="district" title="請選擇">
+												<div class="filter-option">
+													<div class="filter-option-inner">
+														<div class="filter-option-inner-inner">請選擇</div>
+													</div>
+												</div>
+											</button>
+											<div class="dropdown-menu " role="combobox"
+												style="overflow: hidden; max-height: 208px; min-width: 126px;">
+												<div class="inner show" role="listbox" aria-expanded="false" tabindex="-1"
+													style="overflow-y: auto; max-height: 198px;">
+													<ul class="dropdown-menu inner show">
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text"></span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">桃園區</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">中壢區</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">大溪區</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">楊梅區</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">蘆竹區</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">大園區</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">龜山區</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">八德區</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">龍潭區</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">平鎮區</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">新屋區</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">觀音區</span></a></li>
+														<li><a role="option" class="dropdown-item" aria-disabled="false"
+																tabindex="0" aria-selected="false"><span
+																	class=" bs-ok-default check-mark"></span><span
+																	class="text">復興區</span></a></li>
+													</ul>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group"><label for="village" class="">里</label>
+										<div class="dropdown bootstrap-select form-control"><select name="village" id="village"
+												class="form-control selectpicker" title="請選擇" tabindex="-98">
+												<option class="bs-title-option" value=""></option>
+											</select><button type="button" class="btn dropdown-toggle bs-placeholder btn-light"
+												data-toggle="dropdown" role="button" data-id="village" title="請選擇">
+												<div class="filter-option">
+													<div class="filter-option-inner">
+														<div class="filter-option-inner-inner">請選擇</div>
+													</div>
+												</div>
+											</button>
+											<div class="dropdown-menu " role="combobox" style="overflow: hidden;">
+												<div class="inner show" role="listbox" aria-expanded="false" tabindex="-1"
+													style="overflow-y: auto;">
+													<ul class="dropdown-menu inner show"></ul>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-12">
+									<div class="form-group"><label for="" class="required">詳細位置</label><input type="text"
+											class="form-control" required=""></div>
+								</div>
+								<div class="col-12">
+									<hr>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group"><label for="" class="required">姓名</label><input type="text"
+											class="form-control" required=""></div>
+								</div>
+								<div class="w-100"></div>
+								<div class="col-sm-6">
+									<div class="form-group"><label for="" class="required">聯絡電話</label><input type="text"
+											class="form-control" required=""></div>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group"><label>Email</label><input type="text" class="form-control">
+										<div class="mt-1">
+											<div class="form-check"><input type="checkbox" class="form-check-input checkbox-md"
+													id="done_email2"><label class="form-check-label"
+													for="done_email2">接收完工email通知</label></div>
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-12">
+									<div class="form-group"><label>備註</label><textarea class="form-control"
+											placeholder="如地址錯誤，請在此輸入正確地址"></textarea></div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-12">
+									<div class="form-group"><label for="">上傳照片(最多三張)</label>
+										<div class="row">
+											<div class="col-sm-4">
+												<div class="dropify-wrapper">
+													<div class="dropify-message"><span class="file-icon">
+															<p>點擊或拖曳上傳檔案</p>
+														</span>
+														<p class="dropify-error">Ooops, something wrong happended.</p>
+													</div>
+													<div class="dropify-loader"></div>
+													<div class="dropify-errors-container">
+														<ul></ul>
+													</div><input type="file" class="dropify" accept="image/*"><button
+														type="button" class="dropify-clear">移除檔案</button>
+													<div class="dropify-preview"><span class="dropify-render"></span>
+														<div class="dropify-infos">
+															<div class="dropify-infos-inner">
+																<p class="dropify-filename"><span class="file-icon"></span>
+																	<span class="dropify-filename-inner"></span>
+																</p>
+																<p class="dropify-infos-message">點擊或拖曳上傳檔案</p>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="col-sm-4">
+												<div class="dropify-wrapper">
+													<div class="dropify-message"><span class="file-icon">
+															<p>點擊或拖曳上傳檔案</p>
+														</span>
+														<p class="dropify-error">Ooops, something wrong happended.</p>
+													</div>
+													<div class="dropify-loader"></div>
+													<div class="dropify-errors-container">
+														<ul></ul>
+													</div><input type="file" class="dropify" accept="image/*"><button
+														type="button" class="dropify-clear">移除檔案</button>
+													<div class="dropify-preview"><span class="dropify-render"></span>
+														<div class="dropify-infos">
+															<div class="dropify-infos-inner">
+																<p class="dropify-filename"><span class="file-icon"></span>
+																	<span class="dropify-filename-inner"></span>
+																</p>
+																<p class="dropify-infos-message">點擊或拖曳上傳檔案</p>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="col-sm-4">
+												<div class="dropify-wrapper">
+													<div class="dropify-message"><span class="file-icon">
+															<p>點擊或拖曳上傳檔案</p>
+														</span>
+														<p class="dropify-error">Ooops, something wrong happended.</p>
+													</div>
+													<div class="dropify-loader"></div>
+													<div class="dropify-errors-container">
+														<ul></ul>
+													</div><input type="file" class="dropify" accept="image/*"><button
+														type="button" class="dropify-clear">移除檔案</button>
+													<div class="dropify-preview"><span class="dropify-render"></span>
+														<div class="dropify-infos">
+															<div class="dropify-infos-inner">
+																<p class="dropify-filename"><span class="file-icon"></span>
+																	<span class="dropify-filename-inner"></span>
+																</p>
+																<p class="dropify-infos-message">點擊或拖曳上傳檔案</p>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-12">
+									<hr>
+								</div>
+								<div class="col-12">
+									<div class="alert alert-greenApple" role="alert">
+										<h4 class="alert-heading">服務條款</h4>
+										<p>依據桃園市政府(以下簡稱本府)規範，此路燈故障填寫內容為實際情況，若有不實通報或惡意報修情形，本府將不受理該案件，並將相關IP提供至執法機關且保留法律追訴權。</p>
+										<hr>
+										<div class="form-check"><input type="checkbox" class="form-check-input checkbox-md"
+												id="check1"><label class="form-check-label"
+												for="check1">本人同意上述條款，且報修資料正確無誤。</label></div>
+									</div>
+								</div>
+								<div class="col-12">
+									<div class="alert alert-greenApple" role="alert">
+										<h4 class="alert-heading">個人資料保護法</h4>
+										<p> 桃園市政府(以下簡稱本府)可能蒐集您個人相關資訊，包括但不限於姓名、電話、電子郵件地址及其他可直接或間接識別使用者身分之個人資料、ＩＰ位址、停留時間之記錄。本府依據個人資料保護法（下稱個資法）定義，您保有一切符合個資法規範之權利
+											<br>本府有權隨時修訂本聲明及相關告知事項，並得於修訂後公佈於本府網站，不另行個別通知，更新的隱私權條款仍對您發生效力，因此，您有義務亦隨時在本府網站上詳閱最新版本的聲明及相關告知事項。"
+										</p>
+										<hr>
+										<div class="form-check"><input type="checkbox" class="form-check-input checkbox-md"
+												id="check2"><label class="form-check-label" for="check2">已審閱並同意個資告知事項。</label>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-4">
+									<div class="form-group"><label>驗證碼</label><input type="text" class="form-control"
+											placeholder="驗證碼不分大小寫"></div>
+								</div>
+								<div class="col-4">
+									<div class="form-group"><label></label><img
+											src="blob:https://smartstreetlight.tycg.gov.tw:8443/fe4e446f-1dd5-4080-b6c3-69759f644360"
+											alt="" style="max-width: 100%;"></div>
+								</div>
+								<div class="col-4">
+									<div class="form-group"><label></label><img class="mt-5 ml-2"
+											src="/assets/images/arrow-rotate-right-solid.svg"
+											style="max-height: 1.5rem; cursor: pointer;"></div>
+								</div>
+							</div>
+							<hr class="border-secondary">
+							<div class="d-flex justify-content-end"><button class="btn btn-outline-light mr-3"
+									style="width: 150px;">清空重填</button><button class="btn btn-outline-info"
+									style="width: 150px;">送出</button></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/12.2.0/highcharts.min.js"
+		integrity="sha512-dJzfC2kfKm1ty6FGuzkVN95rs2Jl0O5zmUkn0RmCoAsHaPZA1NkJ11PKL9Gmgmb4rKbyyaGQgNZgrKro0olN6A=="
+		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script type="text/javascript">
+		if (!Array.isArray(window.qbOptions)) {
+			window.qbOptions = []
+		}
+		window.qbOptions.push({ "baseUrl": "https://botsrv2.com", "use": "NePdxmoqdGEj8K6Q/A7VaDrlo7zmB6xgO" });
+	</script>
+	<script type="text/javascript" src="https://static.botsrv2.com/website/js/widget2.js" crossorigin="anonymous" defer
+		data-no-minify="1" data-cfasync="false"></script>
+</body>
+
+</html>
